@@ -1,39 +1,18 @@
-import ballerina/io;
+import ballerina/stringutils;
 import ballerina/test;
 
-# Before Suite Function
+Configuration mediumConfig = {
+    accessToken: ""
+};
+Client mediumClient = new(mediumConfig);
 
-@test:BeforeSuite
-function beforeSuiteFunc() {
-    io:println("I'm the before suite function!");
-}
+@test:Config {}
+function testInfo() {
+    var infoResponse = mediumClient->info();
 
-# Before test function
-
-function beforeFunc() {
-    io:println("I'm the before function!");
-}
-
-# Test function
-
-@test:Config {
-    before: "beforeFunc",
-    after: "afterFunc"
-}
-function testFunction() {
-    io:println("I'm in test function!");
-    test:assertTrue(true, msg = "Failed!");
-}
-
-# After test function
-
-function afterFunc() {
-    io:println("I'm the after function!");
-}
-
-# After Suite Function
-
-@test:AfterSuite
-function afterSuiteFunc() {
-    io:println("I'm the after suite function!");
+    if (infoResponse is Status) {
+        test:assertTrue(stringutils:contains("", ""), "Failed to call info()");
+    } else {
+        test:assertFail(<string>infoResponse.detail()["message"]);
+    }
 }

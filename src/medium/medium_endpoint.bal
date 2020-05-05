@@ -1,47 +1,41 @@
-import ballerina/encoding;
 import ballerina/http;
+import ballerina/io;
 
-# The Twitter client object.
+# The Medium client object.
 public type Client client object {
 
-    http:Client twitterClient;
-    Credential twitterCredential;
+    http:Client mediumClient;
+    Credential mediumCredential;
 
-    public function __init(Configuration twitterConfig) {
-        self.twitterClient = new(TWITTER_API_URL, twitterConfig.clientConfig);
-        self.twitterCredential = {
-            accessToken: twitterConfig.accessToken,
-            accessTokenSecret: twitterConfig.accessTokenSecret,
-            consumerKey: twitterConfig.consumerKey,
-            consumerSecret: twitterConfig.consumerSecret
+    public function __init(Configuration mediumConfig) {
+        self.mediumClient = new (MEDIUM_API_URL, mediumConfig.clientConfig);
+        self.mediumCredential = {
+            accessToken: mediumConfig.accessToken
         };
     }
 
-    # Updates the authenticating user's current status, also known as Tweeting.
-    #
-    # + status - The text of status update
-    # + return - If success, returns `twitter:Status` object, else returns `error`
-    public remote function tweet(string status) returns @tainted Status|error {
-        var encodedStatus = encoding:encodeUriComponent(status, UTF_8);
-        if (encodedStatus is error) {
-            return prepareError("Error occurred while encoding the status.");
-        }
-        string urlParams = "status=" + <string>encodedStatus;
-
-        var header = generateAuthorizationHeader(self.twitterCredential, POST, UPDATE_API, urlParams);
+    public remote function info() returns @tainted Status|error {
+        
+        var header = generateAuthorizationHeader(self.mediumCredential);
         if (header is error) {
             return prepareError("Error occurred while generating authorization header.");
         }
-        http:Request request = new;
-        request.setHeader("Authorization", <string>header);
-        string requestPath = UPDATE_API + "?" + urlParams;
 
-        var httpResponse = self.twitterClient->post(requestPath, request);
+        http:Request request = new;
+        request.setHeader("Host", "api.medium.com");
+        request.setHeader("Authorization", <string>header);
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("Accept", "application/json");
+        request.setHeader("Accept-Charset", "utf-8");
+        string requestPath = INFO_API;
+
+        var httpResponse = self.mediumClient->get(requestPath, request);
         if (httpResponse is http:Response) {
             var jsonPayload = httpResponse.getJsonPayload();
             if (jsonPayload is json) {
                 int statusCode = httpResponse.statusCode;
                 if (statusCode == http:STATUS_OK) {
+                    io:println(jsonPayload.toString());
                     return convertToStatus(jsonPayload);
                 } else {
                     return prepareErrorResponse(jsonPayload);
@@ -53,4 +47,13 @@ public type Client client object {
             return prepareError("Error occurred while invoking the REST API.");
         }
     }
-}
+};
+
+type Credential record {
+    string accessToken;
+};
+
+public type Configuration record {
+    string accessToken;
+    http:ClientConfiguration clientConfig = {};
+};

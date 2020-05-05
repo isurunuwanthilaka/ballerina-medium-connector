@@ -1,5 +1,8 @@
 [project]
 org-name= "isurun"
-version= "0.1.0"
-
+version= "0.0.1"
+license = ["Apache-2.0"]
+authors = ["Isuru Nuwanthilaka"]
+repository = "https://github.com/isurunuwanthilaka/ballerina-medium-connector"
+keywords = ["ballerina", "medium", "connector", "integration"]
 [dependencies]
