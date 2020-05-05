@@ -1,8 +1,9 @@
 import ballerina/stringutils;
 import ballerina/test;
+import ballerina/system;
 
 Configuration mediumConfig = {
-    accessToken: ""
+    accessToken: system:getEnv("ACCESS_TOKEN")
 };
 Client mediumClient = new(mediumConfig);
 
