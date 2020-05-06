@@ -9,6 +9,22 @@ function convertToUser(json response) returns User {
     return user;
 }
 
+function convertToPostResponse(json response) returns PostResponse {
+    PostResponse postresponse = {
+        id:<string>response.data.id,
+        title:<string>response.data.title,
+        authorId:<string>response.data.authorId,
+        tags:<json[]>response.data.tags,
+        url:<string>response.data.url,
+        canonicalUrl:<string>response.data.canonicalUrl,
+        publishStatus:<string>response.data.publishStatus,
+        publishedAt:<float>response.data.publishedAt,
+        license:<string>response.data.license,
+        licenseUrl:<string>response.data.licenseUrl     
+    };
+    return postresponse;
+}
+
 function convertToPublication(json response) returns Publication {
     Publication publication = {
         id: <string>response.id,

@@ -52,4 +52,16 @@ function testGetContributors() {
     }
 }
 
+@test:Config {}
+function testCreatePost() {
+    Post post =new();
+    var infoResponse = mediumClient->createPost(post,"19ee90b2494c92e1bcd33a6654c27ba234e934ac2d9d9af8394231ee7bc26affa");
+
+    if (infoResponse is PostResponse) {
+        test:assertTrue(stringutils:contains("", ""), "Failed to call info()");
+    } else {
+        test:assertFail(<string>infoResponse.detail()["message"]);
+    }
+}
+
 

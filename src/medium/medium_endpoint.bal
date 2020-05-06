@@ -165,7 +165,100 @@ public type Client client object {
 
     }
 
+    public remote function createPost(Post post,string userId) returns @tainted PostResponse|error {
+
+        var header = generateAuthorizationHeader(self.mediumCredential);
+        if (header is error) {
+            return prepareError("Error occurred while generating authorization header.");
+        }
+
+        json body = {
+            title: post.title,
+            contentFormat: post.contentFormat,
+            content: post.content,
+            canonicalUrl: post.canonicalUrl,
+            tags:post.tags,
+            publishStatus: post.publishStatus,
+            license:post.license,
+            notifyFollowers:post.notifyFollowers
+        };
+
+
+        http:Request request = new;
+        request.setHeader("Host", "api.medium.com");
+        request.setHeader("Authorization", <string>header);
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("Accept", "application/json");
+        request.setHeader("Accept-Charset", "utf-8");
+
+        request.setJsonPayload(body);
+
+
+        string requestPath = USER_API + userId + POSTS;
+        var httpResponse = self.mediumClient->post(<@untained>requestPath, request);
+
+        if (httpResponse is http:Response) {
+            var jsonPayload = httpResponse.getJsonPayload();
+            if (jsonPayload is json) {
+                int statusCode = httpResponse.statusCode;
+                if (statusCode == http:STATUS_CREATED) {
+                    io:println(jsonPayload.toString());
+                    return convertToPostResponse(jsonPayload);
+                } else {
+                    return prepareErrorResponse(jsonPayload);
+                }
+            } else {
+                return prepareError("Error occurred while accessing the JSON payload of the response.");
+            }
+        } else {
+            return prepareError("Error occurred while invoking the REST API.");
+        }
+
+    }
+
 };
+
+# Medium Post object
+public type Post object {
+
+    string title = "Hello World!";
+    string contentFormat = "html";
+    string content = "<h1>Hello World!</h1><p>You’ll never walk alone.</p>";
+    string canonicalUrl = "";
+    string[] tags = [];
+    string publishStatus = "public";
+    string license = "all-rights-reserved";
+    boolean notifyFollowers = false;
+
+    public function setTitle(string temp) {
+        self.title = temp;
+    }
+
+    public function setContentFormat(string temp) {
+        self.contentFormat = temp;
+    }
+
+    public function setContent(string temp) {
+        self.content = temp;
+    }
+    public function setCanonicalUrl(string temp) {
+        self.canonicalUrl = temp;
+    }
+    public function setTags(string[] temp) {
+        self.tags = temp;
+    }
+    public function setPublishStatus(string temp) {
+        self.publishStatus = temp;
+    }
+    public function setLicense(string temp) {
+        self.license = temp;
+    }
+    public function setNotifyFollowers(boolean temp) {
+        self.notifyFollowers = temp;
+    }
+
+};
+
 
 type Credential record {
     string accessToken;

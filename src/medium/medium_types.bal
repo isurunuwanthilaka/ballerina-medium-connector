@@ -4,7 +4,7 @@ public type User record {
     string name = "";
     string url = "";
     string imageUrl = "";
-    
+
 };
 
 public type Publication record {
@@ -13,11 +13,23 @@ public type Publication record {
     string description = "";
     string url = "";
     string imageUrl = "";
-    
+
+};
+public type PostResponse record {
+    string id = "";
+    string title = "";
+    string authorId = "";
+    json[] tags = [];
+    string url = "";    
+    string canonicalUrl = "";    
+    string publishStatus = "";    
+    float publishedAt = 0;    
+    string license = "";    
+    string licenseUrl = "";    
 };
 
 public type Contributor record {
     string publicationId = "";
     string userId = "";
-    string role = "";    
+    string role = "";
 };

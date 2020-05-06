@@ -20,6 +20,6 @@ function prepareErrorResponse(json response) returns error {
 
 function prepareError(string message) returns error {
     log:printError(message);
-    error twitterError = error(MEDIUM_ERROR_CODE, message = message);
-    return twitterError;
+    error mediumError = error(MEDIUM_ERROR_CODE, message = message);
+    return mediumError;
 }
