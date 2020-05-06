@@ -1,5 +1,6 @@
-Prints "Hello World!" with a main function.
+Ballerina Connector for Medium
 [//]: # (above is the module summary)
 
-# Module Overview
-Prints "Hello World!" as the output to the command line using a main function.
+# Ballerina Medium Connector
+Medium is a blogging platform, with many writers and readers now. This module is created to connect medium platform with ballerina.
+

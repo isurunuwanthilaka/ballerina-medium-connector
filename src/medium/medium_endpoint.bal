@@ -14,8 +14,8 @@ public type Client client object {
         };
     }
 
-    public remote function info() returns @tainted Status|error {
-        
+    public remote function userInfo() returns @tainted User|error {
+
         var header = generateAuthorizationHeader(self.mediumCredential);
         if (header is error) {
             return prepareError("Error occurred while generating authorization header.");
@@ -36,7 +36,7 @@ public type Client client object {
                 int statusCode = httpResponse.statusCode;
                 if (statusCode == http:STATUS_OK) {
                     io:println(jsonPayload.toString());
-                    return convertToStatus(jsonPayload);
+                    return convertToUser(jsonPayload);
                 } else {
                     return prepareErrorResponse(jsonPayload);
                 }
@@ -47,6 +47,50 @@ public type Client client object {
             return prepareError("Error occurred while invoking the REST API.");
         }
     }
+
+    public remote function getPublications() returns @tainted Publication[]|error {
+
+        var user = self->userInfo();
+
+        var header = generateAuthorizationHeader(self.mediumCredential);
+        if (header is error) {
+            return prepareError("Error occurred while generating authorization header.");
+        }
+
+        http:Request request = new;
+        request.setHeader("Host", "api.medium.com");
+        request.setHeader("Authorization", <string>header);
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("Accept", "application/json");
+        request.setHeader("Accept-Charset", "utf-8");
+
+        if (user is User) {
+            string requestPath = USER_API + user.id + PUBLICATION;
+            var httpResponse = self.mediumClient->get(<@untained>  requestPath, request);
+
+            if (httpResponse is http:Response) {
+                var jsonPayload = httpResponse.getJsonPayload();
+                if (jsonPayload is json) {
+                    int statusCode = httpResponse.statusCode;
+                    if (statusCode == http:STATUS_OK) {
+                        io:println(jsonPayload.toString());
+                        return convertToPublications(jsonPayload);
+                    } else {
+                        return prepareErrorResponse(jsonPayload);
+                    }
+                } else {
+                    return prepareError("Error occurred while accessing the JSON payload of the response.");
+                }
+            } else {
+                return prepareError("Error occurred while invoking the REST API.");
+            }
+
+        } else {
+            return prepareError("Error in getting user data. ");
+        }
+
+    }
+
 };
 
 type Credential record {

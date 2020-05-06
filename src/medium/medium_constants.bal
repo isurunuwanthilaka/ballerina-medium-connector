@@ -1,6 +1,8 @@
 // Medium APIs
 final string MEDIUM_API_URL = "https://api.medium.com";
 final string INFO_API = "/v1/me";
+final string USER_API = "/v1/users/";
+final string PUBLICATION ="/publications";
 
 // String constants
 final string UTF_8 = "UTF-8";
