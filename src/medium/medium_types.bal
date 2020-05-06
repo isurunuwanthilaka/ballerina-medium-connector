@@ -15,3 +15,9 @@ public type Publication record {
     string imageUrl = "";
     
 };
+
+public type Contributor record {
+    string publicationId = "";
+    string userId = "";
+    string role = "";    
+};
