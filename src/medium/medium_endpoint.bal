@@ -279,16 +279,16 @@ public type Client client object {
 
         if (image.format == "png") {
             contentType = mime:IMAGE_PNG;
-        }else if (image.format == "jpeg" || image.format == "jpg") {
+        } else if (image.format == "jpeg" || image.format == "jpg") {
             contentType = mime:IMAGE_JPEG;
-        }else if (image.format == "gif") {
+        } else if (image.format == "gif") {
             contentType = mime:IMAGE_GIF;
-        }else if (image.format == "tiff") {
+        } else if (image.format == "tiff") {
             contentType = "image/tiff";
         }
 
         mime:Entity pngPart = new;
-        pngPart.setContentDisposition(getContentDispositionForFormData());
+        pngPart.setContentDisposition(self.getContentDispositionForFormData());
         pngPart.setFileAsEntityBody(image.imageLocation, contentType = contentType);
 
         http:Request request = new;
@@ -322,8 +322,7 @@ public type Client client object {
 
     }
 
-    function getContentDispositionForFormData()
-    returns (mime:ContentDisposition) {
+    function getContentDispositionForFormData() returns (mime:ContentDisposition) {
         mime:ContentDisposition contentDisposition = new;
         contentDisposition.name = "image";
         contentDisposition.fileName = "filename.png";
