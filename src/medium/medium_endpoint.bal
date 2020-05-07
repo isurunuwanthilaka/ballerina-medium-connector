@@ -216,6 +216,57 @@ public type Client client object {
 
     }
 
+    public remote function createPostToPublication(Post post,string publicationId) returns @tainted PostPublicationResponse|error {
+
+        var header = generateAuthorizationHeader(self.mediumCredential);
+        if (header is error) {
+            return prepareError("Error occurred while generating authorization header.");
+        }
+
+        json body = {
+            title: post.title,
+            contentFormat: post.contentFormat,
+            content: post.content,
+            canonicalUrl: post.canonicalUrl,
+            tags:post.tags,
+            publishStatus: post.publishStatus,
+            license:post.license,
+            notifyFollowers:post.notifyFollowers
+        };
+
+
+        http:Request request = new;
+        request.setHeader("Host", "api.medium.com");
+        request.setHeader("Authorization", <string>header);
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("Accept", "application/json");
+        request.setHeader("Accept-Charset", "utf-8");
+
+        request.setJsonPayload(body);
+
+
+        string requestPath = PUBLICATION_API + publicationId + POSTS;
+        var httpResponse = self.mediumClient->post(<@untained>requestPath, request);
+
+        if (httpResponse is http:Response) {
+            var jsonPayload = httpResponse.getJsonPayload();
+            if (jsonPayload is json) {
+                int statusCode = httpResponse.statusCode;
+                if (statusCode == http:STATUS_CREATED) {
+                    io:println(jsonPayload.toString());
+                    return convertToPostPublicationResponse(jsonPayload);
+                } else {
+                    return prepareErrorResponse(jsonPayload);
+                }
+            } else {
+                return prepareError("Error occurred while accessing the JSON payload of the response.");
+            }
+        } else {
+            return prepareError("Error occurred while invoking the REST API.");
+        }
+
+    }
+
 };
 
 # Medium Post object

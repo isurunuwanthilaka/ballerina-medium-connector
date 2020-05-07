@@ -24,6 +24,22 @@ function convertToPostResponse(json response) returns PostResponse {
     };
     return postresponse;
 }
+function convertToPostPublicationResponse(json response) returns PostPublicationResponse {
+    PostPublicationResponse postPublicationResponse = {
+        id:<string>response.data.id,
+        publicationId:<string>response.data.publicationId,
+        title:<string>response.data.title,
+        authorId:<string>response.data.authorId,
+        tags:<json[]>response.data.tags,
+        url:<string>response.data.url,
+        canonicalUrl:<string>response.data.canonicalUrl,
+        publishStatus:<string>response.data.publishStatus,
+        publishedAt:<float>response.data.publishedAt,
+        license:<string>response.data.license,
+        licenseUrl:<string>response.data.licenseUrl     
+    };
+    return postPublicationResponse;
+}
 
 function convertToPublication(json response) returns Publication {
     Publication publication = {

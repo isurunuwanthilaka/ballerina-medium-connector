@@ -55,6 +55,7 @@ function testGetContributors() {
 @test:Config {}
 function testCreatePost() {
     Post post =new();
+    post.setPublishStatus("draft");
     var infoResponse = mediumClient->createPost(post,"19ee90b2494c92e1bcd33a6654c27ba234e934ac2d9d9af8394231ee7bc26affa");
 
     if (infoResponse is PostResponse) {

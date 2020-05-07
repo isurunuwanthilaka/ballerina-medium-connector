@@ -27,6 +27,19 @@ public type PostResponse record {
     string license = "";    
     string licenseUrl = "";    
 };
+public type PostPublicationResponse record {
+    string id = "";
+    string publicationId = "";
+    string title = "";
+    string authorId = "";
+    json[] tags = [];
+    string url = "";    
+    string canonicalUrl = "";    
+    string publishStatus = "";    
+    float publishedAt = 0;    
+    string license = "";    
+    string licenseUrl = "";    
+};
 
 public type Contributor record {
     string publicationId = "";
