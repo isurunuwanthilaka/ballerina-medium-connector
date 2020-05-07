@@ -23,7 +23,7 @@ public type PostResponse record {
     string url = "";    
     string canonicalUrl = "";    
     string publishStatus = "";    
-    float publishedAt = 0;    
+    int publishedAt = 0;    
     string license = "";    
     string licenseUrl = "";    
 };
@@ -36,7 +36,7 @@ public type PostPublicationResponse record {
     string url = "";    
     string canonicalUrl = "";    
     string publishStatus = "";    
-    float publishedAt = 0;    
+    int publishedAt = 0;    
     string license = "";    
     string licenseUrl = "";    
 };

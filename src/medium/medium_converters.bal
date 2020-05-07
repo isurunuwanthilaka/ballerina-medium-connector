@@ -18,7 +18,7 @@ function convertToPostResponse(json response) returns PostResponse {
         url:<string>response.data.url,
         canonicalUrl:<string>response.data.canonicalUrl,
         publishStatus:<string>response.data.publishStatus,
-        publishedAt:<float>response.data.publishedAt,
+        publishedAt:<int>response.data.publishedAt,
         license:<string>response.data.license,
         licenseUrl:<string>response.data.licenseUrl     
     };
@@ -34,7 +34,7 @@ function convertToPostPublicationResponse(json response) returns PostPublication
         url:<string>response.data.url,
         canonicalUrl:<string>response.data.canonicalUrl,
         publishStatus:<string>response.data.publishStatus,
-        publishedAt:<float>response.data.publishedAt,
+        publishedAt:<int>response.data.publishedAt,
         license:<string>response.data.license,
         licenseUrl:<string>response.data.licenseUrl     
     };
