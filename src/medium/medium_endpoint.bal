@@ -1,5 +1,6 @@
 import ballerina/http;
 import ballerina/io;
+import ballerina/mime;
 
 # The Medium client object.
 public type Client client object {
@@ -165,7 +166,7 @@ public type Client client object {
 
     }
 
-    public remote function createPost(Post post,string userId) returns @tainted PostResponse|error {
+    public remote function createPost(Post post, string userId) returns @tainted PostResponse|error {
 
         var header = generateAuthorizationHeader(self.mediumCredential);
         if (header is error) {
@@ -177,10 +178,10 @@ public type Client client object {
             contentFormat: post.contentFormat,
             content: post.content,
             canonicalUrl: post.canonicalUrl,
-            tags:post.tags,
+            tags: post.tags,
             publishStatus: post.publishStatus,
-            license:post.license,
-            notifyFollowers:post.notifyFollowers
+            license: post.license,
+            notifyFollowers: post.notifyFollowers
         };
 
 
@@ -216,7 +217,7 @@ public type Client client object {
 
     }
 
-    public remote function createPostToPublication(Post post,string publicationId) returns @tainted PostPublicationResponse|error {
+    public remote function createPostToPublication(Post post, string publicationId) returns @tainted PostPublicationResponse|error {
 
         var header = generateAuthorizationHeader(self.mediumCredential);
         if (header is error) {
@@ -228,10 +229,10 @@ public type Client client object {
             contentFormat: post.contentFormat,
             content: post.content,
             canonicalUrl: post.canonicalUrl,
-            tags:post.tags,
+            tags: post.tags,
             publishStatus: post.publishStatus,
-            license:post.license,
-            notifyFollowers:post.notifyFollowers
+            license: post.license,
+            notifyFollowers: post.notifyFollowers
         };
 
 
@@ -265,6 +266,69 @@ public type Client client object {
             return prepareError("Error occurred while invoking the REST API.");
         }
 
+    }
+
+    public remote function createImage(Image image) returns @tainted ImageResponse|error {
+
+        var header = generateAuthorizationHeader(self.mediumCredential);
+        if (header is error) {
+            return prepareError("Error occurred while generating authorization header.");
+        }
+
+        string contentType = mime:IMAGE_PNG;
+
+        if (image.format == "png") {
+            contentType = mime:IMAGE_PNG;
+        }else if (image.format == "jpeg" || image.format == "jpg") {
+            contentType = mime:IMAGE_JPEG;
+        }else if (image.format == "gif") {
+            contentType = mime:IMAGE_GIF;
+        }else if (image.format == "tiff") {
+            contentType = "image/tiff";
+        }
+
+        mime:Entity pngPart = new;
+        pngPart.setContentDisposition(getContentDispositionForFormData());
+        pngPart.setFileAsEntityBody(image.imageLocation, contentType = contentType);
+
+        http:Request request = new;
+        request.setHeader("Host", "api.medium.com");
+        request.setHeader("Authorization", <string>header);
+        request.setHeader("Accept", "application/json");
+        request.setHeader("Accept-Charset", "utf-8");
+
+        mime:Entity[] bodyParts = [pngPart];
+        request.setBodyParts(bodyParts, contentType = mime:MULTIPART_FORM_DATA);
+
+        string requestPath = IMAGE_API;
+        var httpResponse = self.mediumClient->post(requestPath, request);
+
+        if (httpResponse is http:Response) {
+            var jsonPayload = httpResponse.getJsonPayload();
+            if (jsonPayload is json) {
+                int statusCode = httpResponse.statusCode;
+                if (statusCode == http:STATUS_CREATED) {
+                    io:println(jsonPayload.toString());
+                    return convertToImageResponse(jsonPayload);
+                } else {
+                    return prepareErrorResponse(jsonPayload);
+                }
+            } else {
+                return prepareError("Error occurred while accessing the JSON payload of the response.");
+            }
+        } else {
+            return prepareError("Error occurred while invoking the REST API.");
+        }
+
+    }
+
+    function getContentDispositionForFormData()
+    returns (mime:ContentDisposition) {
+        mime:ContentDisposition contentDisposition = new;
+        contentDisposition.name = "image";
+        contentDisposition.fileName = "filename.png";
+        contentDisposition.disposition = "form-data";
+        return contentDisposition;
     }
 
 };
@@ -310,6 +374,19 @@ public type Post object {
 
 };
 
+# Medium image
+public type Image object {
+    string format = "";
+    string imageLocation = "";
+
+    public function setFormat(string temp) {
+        self.format = temp;
+    }
+
+    public function setImageLocation(string temp) {
+        self.imageLocation = temp;
+    }
+};
 
 type Credential record {
     string accessToken;

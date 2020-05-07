@@ -52,6 +52,14 @@ function convertToPublication(json response) returns Publication {
     return publication;
 }
 
+function convertToImageResponse(json response) returns ImageResponse {
+    ImageResponse imageResponse = {
+        url: <string>response.data.url,
+        md5: <string>response.data.md5     
+    };
+    return imageResponse;
+}
+
 
 function convertToPublications(json response) returns Publication[] {
     Publication[] publications = [];

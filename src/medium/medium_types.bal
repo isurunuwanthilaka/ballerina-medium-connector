@@ -15,6 +15,12 @@ public type Publication record {
     string imageUrl = "";
 
 };
+
+public type ImageResponse record {
+    string url = "";
+    string md5 = "";
+};
+
 public type PostResponse record {
     string id = "";
     string title = "";
